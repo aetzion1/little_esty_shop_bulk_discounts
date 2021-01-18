@@ -18,7 +18,13 @@ class InvoiceItem < ApplicationRecord
   end
 
   def discount_to_percentage
-    (self.discount_applied * 100).round
+    if discount_applied
+      (self.discount_applied * 100).round
+    else
+      if best_discount
+      (self.best_discount.discount * 100).round
+      end
+    end
   end
 
   def self.store_discount
