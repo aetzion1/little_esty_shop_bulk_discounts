@@ -17,6 +17,26 @@ class InvoiceItem < ApplicationRecord
     Invoice.order(created_at: :asc).find(invoice_ids)
   end
 
+  def discount_to_percentage
+    if discount_applied
+      (self.discount_applied * 100).round
+    else
+      if best_discount
+      (self.best_discount.discount * 100).round
+      end
+    end
+  end
+
+  def self.store_discount
+    all.each do |invoice_item|
+      if invoice_item.best_discount
+        require 'pry'; binding.pry
+        x = invoice_item.best_discount.discount
+        invoice_item.update(discount_applied: x)
+      end
+    end
+  end
+
   def best_discount
     bulk_discounts.best_discount(self)
   end

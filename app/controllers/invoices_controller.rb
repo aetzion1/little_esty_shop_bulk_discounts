@@ -12,8 +12,14 @@ class InvoicesController < ApplicationController
   end
 
   def update
-    @invoice.update(invoice_params)
-    redirect_to merchant_invoice_path(@merchant, @invoice)
+    if invoice_params[:status] == "complete"
+      @invoice.update(invoice_params)
+      @invoice.invoice_items.store_discount
+      redirect_to merchant_invoice_path(@merchant, @invoice)
+    else
+      @invoice.update(invoice_params)
+      redirect_to merchant_invoice_path(@merchant, @invoice)
+    end
   end
 
   private

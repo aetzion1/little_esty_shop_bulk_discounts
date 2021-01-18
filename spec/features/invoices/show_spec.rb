@@ -79,12 +79,22 @@ RSpec.describe 'invoices show' do
     expect(page).to have_content(@ii_1.unit_price)
     expect(page).to_not have_content(@ii_4.unit_price)
 
+  end
+
+  it "shows the applicable or applied discount that links to discount show page" do
+    @discount1 = BulkDiscount.create!(name: "Going Out of Business", discount: 0.2, threshold: 2, merchant: @merchant1)
+
+    visit merchant_invoice_path(@merchant1, @invoice_1)
+
     within("#the-status-#{@ii_1.id}") do
-      expect(page).to have_link('Applied Discount')
-      click_link 'Applied Discount'
+      expect(page).to have_link("#{@ii_1.discount_to_percentage}% (available)")
+      click_link "#{@ii_1.discount_to_percentage}% (available)"
     end
 
     expect(current_path).to eq(merchant_bulk_discount_path(@merchant1, @discount1))
+  end
+
+  it "updates each invoice_item to include an applied discount amount once invoice is marked complete" do
   end
 
   it "shows the total revenue for this invoice" do
@@ -107,5 +117,28 @@ RSpec.describe 'invoices show' do
       expect(page).to_not have_content("in progress")
      end
   end
+
+  it "updates each invoice_item to include an applied discount amount once invoice is marked complete" do
+    @discount1 = BulkDiscount.create!(name: "Going Out of Business", discount: 0.2, threshold: 2, merchant: @merchant1)
+
+    visit merchant_invoice_path(@merchant1, @invoice_1)
+
+    within("#the-status-#{@ii_1.id}") do
+      page.select("complete")
+      click_button "Update Invoice"
+    end
+
+    expect(page).to have_content("complete")
+    expect(page).to_not have_content("in progress")
+
+    within("#the-status-#{@ii_1.id}") do
+      expect(page).to have_link("#{@ii_1.discount_to_percentage}% (applied)")
+      click_link "#{@ii_1.discount_to_percentage}% (applied)"
+    end
+
+    expect(current_path).to eq(merchant_bulk_discount_path(@merchant1, @discount1))
+
+  end
+
 
 end
