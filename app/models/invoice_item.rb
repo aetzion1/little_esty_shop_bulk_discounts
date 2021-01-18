@@ -17,6 +17,11 @@ class InvoiceItem < ApplicationRecord
     Invoice.order(created_at: :asc).find(invoice_ids)
   end
 
+  def self.store_discount
+    if best_discount
+      discount_percentage = best_discount.discount
+  end
+
   def best_discount
     bulk_discounts.best_discount(self)
   end
