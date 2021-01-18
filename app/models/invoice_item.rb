@@ -19,7 +19,7 @@ class InvoiceItem < ApplicationRecord
 
   def self.store_discount
     if best_discount
-      discount_percentage = best_discount.discount
+      discount_applied << best_discount.discount
   end
 
   def best_discount
