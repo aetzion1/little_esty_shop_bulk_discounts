@@ -19,6 +19,7 @@ class InvoicesController < ApplicationController
     else
       @invoice.update(invoice_params)
       redirect_to merchant_invoice_path(@merchant, @invoice)
+    end
   end
 
   private

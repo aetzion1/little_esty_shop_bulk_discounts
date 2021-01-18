@@ -46,7 +46,7 @@
             <td style="text-align:center">$<%= i.unit_price %></td>
             <td style="text-align:center">
               <% if i.best_discount %>
-                <%= link_to 'Applied Discount', merchant_bulk_discount_path(@merchant, i.best_discount.id) %>
+                <%= link_to "#{i.discount_to_percentage}%", merchant_bulk_discount_path(@merchant, i.best_discount.id) %>
               <% end %>
             </td>
             <td style="text-align:center">
