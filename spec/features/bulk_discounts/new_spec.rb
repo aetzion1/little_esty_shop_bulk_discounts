@@ -18,7 +18,7 @@ describe "merchant discounts new page" do
 
     fill_in :name, with: 'Blackest Friday'
     fill_in :discount, with: 0.5
-    fill_in :threshold, with: 20
+    fill_in :threshold, with: 9
 
     click_button('Submit')
 

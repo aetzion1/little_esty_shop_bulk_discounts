@@ -30,7 +30,6 @@ class InvoiceItem < ApplicationRecord
   def self.store_discount
     all.each do |invoice_item|
       if invoice_item.best_discount
-        require 'pry'; binding.pry
         x = invoice_item.best_discount.discount
         invoice_item.update(discount_applied: x)
       end
