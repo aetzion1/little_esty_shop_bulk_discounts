@@ -21,12 +21,16 @@ class BulkDiscountsController < ApplicationController
     end
 
     def create
-        BulkDiscount.create!(name: params[:name],
-                        discount: params[:discount],
-                        threshold: params[:threshold],
-                        merchant: @merchant)
-                        # id: find_new_id)
-        redirect_to merchant_bulk_discounts_path(@merchant)
+        if @merchant.bulk_discounts.any? { |bd| (bd.threshold < params[:threshold].to_i) || (bd.threshold = params[:threshold].to_i && bd.discount >= params[:discount].to_f)}
+            flash.notice = "You already have a better discount!"
+            redirect_to merchant_bulk_discounts_path(@merchant)
+        else
+            BulkDiscount.create!(name: params[:name],
+                            discount: params[:discount],
+                            threshold: params[:threshold],
+                            merchant: @merchant)
+            redirect_to merchant_bulk_discounts_path(@merchant)
+        end
     end
 
     def destroy
