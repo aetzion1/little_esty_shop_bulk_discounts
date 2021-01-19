@@ -12,10 +12,6 @@ class Invoice < ApplicationRecord
   enum status: [:cancelled, :in_progress, :complete]
 
   scope :pending, lambda {where(:status => 1)}
-
-  def revenue_before_discounts
-    invoice_items.sum('unit_price * quantity')  
-  end
   
   def total_revenue
     revenue = 0
