@@ -38,10 +38,10 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-tether', '>= 1.1.0'
 end
 # Reduces boot times through caching; required in config/boot.rb
-gem 'bootsnap', '>= 1.1.0', require: false
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem 'bootsnap', '>= 1.1.0', require: false
   gem 'capybara'
   gem 'factory_bot_rails'
   gem 'faker'
