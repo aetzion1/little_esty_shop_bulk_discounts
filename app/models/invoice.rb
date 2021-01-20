@@ -11,12 +11,6 @@ class Invoice < ApplicationRecord
 
   enum status: [:cancelled, :in_progress, :complete]
 
-  scope :pending, lambda {where(:status => 1)}
-
-  def revenue_before_discounts
-    invoice_items.sum('unit_price * quantity')  
-  end
-  
   def total_revenue
     revenue = 0
     invoice_items.each do |invoice_item|
@@ -24,6 +18,8 @@ class Invoice < ApplicationRecord
     end
     revenue
   end
+
+  scope :pending, lambda {where(:status => 1)}
 
   def self.in_progress_with_discount(threshold)
     pending.joins(:invoice_items)

@@ -9,7 +9,7 @@ class InvoiceItem < ApplicationRecord
   belongs_to :item
   has_one :merchant, through: :item
   has_many :bulk_discounts, through: :merchant
-# ^ may not be necessary - use method instead
+
   enum status: [:pending, :packaged, :shipped]
 
   def self.incomplete_invoices
@@ -30,7 +30,6 @@ class InvoiceItem < ApplicationRecord
   def self.store_discount
     all.each do |invoice_item|
       if invoice_item.best_discount
-        require 'pry'; binding.pry
         x = invoice_item.best_discount.discount
         invoice_item.update(discount_applied: x)
       end

@@ -29,7 +29,6 @@ RSpec.describe 'invoices show' do
     @invoice_5 = Invoice.create!(merchant_id: @merchant1.id, customer_id: @customer_4.id, status: 2)
     @invoice_6 = Invoice.create!(merchant_id: @merchant1.id, customer_id: @customer_5.id, status: 2)
     @invoice_7 = Invoice.create!(merchant_id: @merchant1.id, customer_id: @customer_6.id, status: 2)
-
     @invoice_8 = Invoice.create!(merchant_id: @merchant2.id, customer_id: @customer_6.id, status: 1)
 
     @ii_1 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 10, status: 2)
@@ -138,6 +137,56 @@ RSpec.describe 'invoices show' do
 
     expect(current_path).to eq(merchant_bulk_discount_path(@merchant1, @discount1))
 
+  end
+
+
+
+  describe "bulk discount example 4 - multiple invoice items on an invoice w/ same discount" do
+    it "displays the appropriate discount for each item" do
+      @bda = BulkDiscount.create!(name: "Going Out of Business", discount: 0.2, threshold: 10, merchant: @merchant1)
+      @bdb = BulkDiscount.create!(name: "Going Out of Business", discount: 0.15, threshold: 15, merchant: @merchant1)
+      @invoicea = Invoice.create!(merchant_id: @merchant1.id, customer_id: @customer_6.id, status: 1)
+      @ii_a1 = InvoiceItem.create!(invoice_id: @invoicea.id, item_id: @item_1.id, quantity: 12, unit_price: 10, status: 2)
+      @ii_a2 = InvoiceItem.create!(invoice_id: @invoicea.id, item_id: @item_2.id, quantity: 15, unit_price: 10, status: 2)
+  
+      visit merchant_invoice_path(@merchant1, @invoicea)
+
+      within("#the-status-#{@ii_a1.id}") do
+        expect(page).to have_link("20% (available)")
+      end
+
+      within("#the-status-#{@ii_a2.id}") do
+        expect(page).to have_link("20% (available)")
+      end
+    end
+  end
+
+  describe "bulk discount example 3 and 5 - multiple invoice items from multiple merchants (latter) on an invoice" do
+    it "displays the appropriate discount for each item" do
+      @bda = BulkDiscount.create!(name: "Going Out of Business", discount: 0.2, threshold: 10, merchant: @merchant1)
+      @bdb = BulkDiscount.create!(name: "Going Out of Business", discount: 0.3, threshold: 15, merchant: @merchant1)
+      @invoicea = Invoice.create!(merchant_id: @merchant1.id, customer_id: @customer_6.id, status: 1)
+      @ii_a1 = InvoiceItem.create!(invoice_id: @invoicea.id, item_id: @item_1.id, quantity: 12, unit_price: 10, status: 2)
+      @ii_a2 = InvoiceItem.create!(invoice_id: @invoicea.id, item_id: @item_2.id, quantity: 15, unit_price: 10, status: 2)
+      @ii_b1 = InvoiceItem.create!(invoice_id: @invoicea.id, item_id: @item_5.id, quantity: 15, unit_price: 10, status: 2)
+  
+      visit merchant_invoice_path(@merchant1, @invoicea)
+
+      within("#the-status-#{@ii_a1.id}") do
+        expect(page).to have_link("20% (available)")
+      end
+
+      within("#the-status-#{@ii_a2.id}") do
+        expect(page).to have_link("30% (available)")
+      end
+
+      visit merchant_invoice_path(@merchant2, @invoicea)
+
+      within("#the-status-#{@ii_b1.id}") do
+        expect(page).to_not have_content("(applied)")
+        expect(page).to_not have_content("(available)")
+      end
+    end
   end
 
 

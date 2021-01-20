@@ -14,11 +14,18 @@ describe "merchant discounts new page" do
   end
   
   it "has a form to create a new discount" do
+    visit merchant_bulk_discounts_path(@merchant_a.id)
+
+    expect(page).to_not have_content('Blackest Friday')
+    click_link('Offer New Discount')
+
+    expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant_a))
+    
     expect(page).to have_button('Submit')
 
     fill_in :name, with: 'Blackest Friday'
     fill_in :discount, with: 0.5
-    fill_in :threshold, with: 20
+    fill_in :threshold, with: 9
 
     click_button('Submit')
 
@@ -28,4 +35,22 @@ describe "merchant discounts new page" do
     expect(page).to have_content('50%')
     expect(page).to have_content(20)
   end
+
+  #Sad Path
+  describe "I create a discount that is worse than an existing one" do
+    it "Then I see a message telling me that I already have a better discount" do
+      
+      fill_in :name, with: 'A Worse Discount'
+      fill_in :discount, with: 0.5
+      fill_in :threshold, with: 11
+  
+      click_button('Submit')
+
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant_a))
+
+      expect(page).to have_content('You already have a better discount!')
+      expect(page).to have_button('Submit')
+    end
+  end
+   
 end

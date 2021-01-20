@@ -48,7 +48,7 @@ describe "merchant discounts index page" do
     expect(page).to_not have_content(@discount_a.name)
   end
 
-  it "will not allow me to delte a discount if there is a pending invoice to which that discount applies" do 
+  it "will not allow me to delete a discount if there is a pending invoice to which that discount applies" do 
     @invoice_a = Invoice.create!(merchant: @merchant_a, customer: @customer_1, status: 1)
     @ii_1 = InvoiceItem.create!(invoice_id: @invoice_a.id, item_id: @item_a1.id, quantity: 10, unit_price: 10, status: 0)
     @ii_2 = InvoiceItem.create!(invoice_id: @invoice_a.id, item_id: @item_a2.id, quantity: 9, unit_price: 8, status: 0)
